@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Prisma generated files
+/generated/prisma/
+/src/generated/prisma/
+
+# Environment variables
+.env
+
+# AI coding tools
+.agents/
+.claude/
+.windsurf/
+
+# Build files
+dist/
+build/
