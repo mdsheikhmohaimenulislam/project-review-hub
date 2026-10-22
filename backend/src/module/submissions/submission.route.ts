@@ -17,7 +17,7 @@ router.post(
 );
 
 router.get(
-  "/mine",
+  "/me",
   auth(UserRole.STUDENT),
   SubmissionController.getMySubmission,
 );
@@ -31,7 +31,7 @@ router.get(
 router.get("/", auth(UserRole.MENTOR), SubmissionController.getAllSubmissions);
 
 router.patch(
-  "/:id/status",
+  "/:id",
   auth(UserRole.MENTOR),
   validateRequest(allValidation.updateSubmissionStatusSchema),
   SubmissionController.updateSubmissionStatus,
@@ -46,7 +46,7 @@ router.post(
 );
 
 router.get(
-  "/:submissionId/reviews",
+  "/:submissionId",
   auth(UserRole.MENTOR, UserRole.STUDENT),
   SubmissionController.getReviewsBySubmission,
 );
