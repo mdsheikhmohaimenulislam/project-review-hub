@@ -47,5 +47,5 @@ export const seedMENTOR = async (): Promise<void> => {
     },
   });
 
-//   console.log("Mentor account ready:", mentor);
+  console.log("Mentor account ready:", mentor);
 };
