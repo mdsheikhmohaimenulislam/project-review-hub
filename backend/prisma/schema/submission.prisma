@@ -9,7 +9,9 @@ model Submission {
   studentId   String           @unique
   student     User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
+
   feedback    Feedback[]
+
 
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt

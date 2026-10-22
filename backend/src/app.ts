@@ -1,7 +1,9 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Application, Request, Response } from "express";
-import config from "./config";
+import config from "./config/index.ts";
+import { AuthRoutes } from "./module/auth/auth.route.ts";
+
 
 
 
@@ -16,6 +18,17 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended : true }));
 app.use(cookieParser())
+
+
+
+app.use("/auth", AuthRoutes);
+
+
+
+
+
+
+
 
 
 app.get("/",(req : Request, res : Response) => {

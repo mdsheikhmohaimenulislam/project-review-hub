@@ -1,15 +1,18 @@
 import type { NextFunction, Request, Response } from "express";
 import type { JwtPayload } from "jsonwebtoken";
 import httpStatus from "http-status";
+import { catchAsync } from "../utils/catchAsync.ts";
+import { AppError } from "../utils/AppError.ts";
+import { jwtUtils } from "../utils/jwt.ts";
+import config from "../config/index.ts";
+import { UserRole } from "../../generated/prisma/enums.ts";
+import { prisma } from "../libs/prisma.ts";
 
 
 
-import { prisma } from "../lib/prisma.js";
-import { UserRole } from "../../generated/prisma/enums.js";
-import { catchAsync } from "../utils/catchAsync.js";
-import { AppError } from "../utils/AppError.js";
-import { jwtUtils } from "../utils/jwt.js";
-import config from "../config/index.js";
+
+
+
 
 
 export interface RequestUser {
