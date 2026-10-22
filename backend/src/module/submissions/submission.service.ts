@@ -10,18 +10,53 @@ interface SubmissionQuery {
   status?: SubmissionStatus;
 }
 
+
 const createSubmission = async (
   studentId: string,
   payload: CreateSubmissionInput,
 ) => {
-  const existingSubmission = await prisma.submission.findUnique({
-    where: { studentId },
+  const existingSubmission = await prisma.submission.findFirst({
+    where: {
+      studentId,
+      projectName: payload.projectName,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   if (existingSubmission) {
+    if (existingSubmission.status === "PENDING") {
+      return prisma.submission.update({
+        where: {
+          id: existingSubmission.id,
+        },
+        data: {
+          ...payload,
+          status: "PENDING",
+        },
+        include: {
+          student: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      });
+    }
+
+    const statusMessages = {
+      PENDING: "Your Project Is Waiting for Review",
+      APPROVED: "Your Project Has Been Approved",
+      REJECTED: "Your Project Has Been Rejected",
+    };
+
     throw new AppError(
       httpStatus.CONFLICT,
-      "You Have Already Submitted A Project",
+      statusMessages[existingSubmission.status] ??
+        "You Have Already Submitted This Project",
     );
   }
 
@@ -42,9 +77,12 @@ const createSubmission = async (
   });
 };
 
+
+
 const getMySubmission = async (studentId: string) => {
-  return prisma.submission.findUnique({
+  return prisma.submission.findMany({
     where: { studentId },
+    orderBy: { createdAt: "desc" },
     include: {
       feedback: {
         orderBy: { createdAt: "desc" },

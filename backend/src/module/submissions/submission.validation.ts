@@ -1,10 +1,19 @@
-
 import { z } from "zod";
 
-const createSubmissionSchema = z.object({
+const validWebsiteUrl = z.url().refine((value) => {
+  const url = new URL(value);
+
+  return (
+    url.protocol === "https:" &&
+    url.hostname.includes(".") &&
+    !url.hostname.endsWith(".")
+  );
+}, "Please provide a valid website URL");
+
+export const createSubmissionSchema = z.object({
   projectName: z.string().trim().min(3).max(100),
-  repoUrl: z.url(),
-  liveUrl: z.url(),
+  repoUrl: validWebsiteUrl,
+  liveUrl: validWebsiteUrl,
   description: z.string().trim().min(20).max(2000),
 });
 

@@ -6,7 +6,7 @@ model Submission {
   description String
   status      SubmissionStatus @default(PENDING)
 
-  studentId   String           @unique
+  studentId   String      
   student     User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
 

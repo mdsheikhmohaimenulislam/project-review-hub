@@ -5,6 +5,7 @@ import config from "./config/index.ts";
 import { AuthRoutes } from "./module/auth/auth.route.ts";
 import { globalErrorHandling } from "./middlewares/error.middleware.ts";
 import { notFound } from "./middlewares/notFound.ts";
+import { SubmissionRoutes } from "./module/submissions/submission.route.ts";
 
 const app: Application = express();
 
@@ -26,6 +27,7 @@ app.get("/", (req: Request, res: Response) => {
 
 
 app.use("/auth", AuthRoutes);
+app.use("/submissions", SubmissionRoutes);
 
 
 
