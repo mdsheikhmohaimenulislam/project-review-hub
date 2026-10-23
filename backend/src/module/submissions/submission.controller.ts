@@ -89,6 +89,19 @@ const updateSubmissionStatus = catchAsync(
   },
 );
 
+const deleteSubmission = catchAsync(async (req: Request, res: Response) => {
+  const submissionId = req.params.id as string;
+
+  const result = await SubmissionServices.deleteSubmission(submissionId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Submission Deleted Successfully",
+    data: result,
+  });
+});
+
 // createReview section
 
 const createReview = catchAsync(async (req: Request, res: Response) => {
@@ -109,14 +122,13 @@ const getReviewsBySubmission = catchAsync(
   async (req: Request, res: Response) => {
     const submissionId = req.params.submissionId as string;
 
-    const result =
-      await SubmissionServices.getReviewsBySubmission(submissionId);
+    await SubmissionServices.getReviewsBySubmission(submissionId);
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: "Reviews Retrieved Successfully",
-      data: result,
+      data: null,
     });
   },
 );
@@ -129,4 +141,5 @@ export const SubmissionController = {
   updateSubmissionStatus,
   createReview,
   getReviewsBySubmission,
+  deleteSubmission,
 };

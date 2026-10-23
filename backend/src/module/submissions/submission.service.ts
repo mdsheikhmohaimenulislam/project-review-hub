@@ -179,6 +179,25 @@ const updateSubmissionStatus = async (
   });
 };
 
+
+const deleteSubmission = async (submissionId: string) => {
+  const submission = await prisma.submission.findUnique({
+    where: { id: submissionId },
+    select: { id: true },
+  });
+
+  if (!submission) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Submission Not Found",
+    );
+  }
+
+  return prisma.submission.delete({
+    where: { id: submissionId },
+  });
+};
+
 // review.service.ts section
 
 const createReview = async (
@@ -246,4 +265,5 @@ export const SubmissionServices = {
   updateSubmissionStatus,
   createReview,
   getReviewsBySubmission,
+  deleteSubmission
 };

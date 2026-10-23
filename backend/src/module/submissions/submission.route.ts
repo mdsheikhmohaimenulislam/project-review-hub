@@ -37,6 +37,12 @@ router.patch(
   SubmissionController.updateSubmissionStatus,
 );
 
+router.delete(
+  "/:id",
+  auth(UserRole.MENTOR),
+  SubmissionController.deleteSubmission,
+);
+
 // Review routes
 router.post(
   "/reviews",

@@ -24,9 +24,7 @@ const submissionQuerySchema = z.object({
 });
 
 const updateSubmissionStatusSchema = z.object({
-  body: z.object({
-    status: z.enum(["APPROVED", "REJECTED"]),
-  }),
+  status: z.enum(["APPROVED", "REJECTED"]),
 });
 
 const createReviewSchema = z.object({
