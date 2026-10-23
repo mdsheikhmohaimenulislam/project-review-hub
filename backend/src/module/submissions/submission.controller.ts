@@ -92,23 +92,27 @@ const updateSubmissionStatus = catchAsync(
 const deleteSubmission = catchAsync(async (req: Request, res: Response) => {
   const submissionId = req.params.id as string;
 
-  const result = await SubmissionServices.deleteSubmission(submissionId);
+  await SubmissionServices.deleteSubmission(submissionId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Submission Deleted Successfully",
-    data: result,
+    data: null,
   });
 });
 
 // createReview section
 
 const createReview = catchAsync(async (req: Request, res: Response) => {
-  const payload = req.body;
+  const submissionId = req.params.id as string;
+  const { message } = req.body;
   const user = req.user!;
 
-  const result = await SubmissionServices.createReview(user.userId, payload);
+  const result = await SubmissionServices.createReview(user.userId, {
+    submissionId,
+    message,
+  });
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -122,13 +126,14 @@ const getReviewsBySubmission = catchAsync(
   async (req: Request, res: Response) => {
     const submissionId = req.params.submissionId as string;
 
-    await SubmissionServices.getReviewsBySubmission(submissionId);
+    const result =
+      await SubmissionServices.getReviewsBySubmission(submissionId);
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: "Reviews Retrieved Successfully",
-      data: null,
+      data: result,
     });
   },
 );

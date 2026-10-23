@@ -45,7 +45,7 @@ router.delete(
 
 // Review routes
 router.post(
-  "/reviews",
+  "/:id",
   auth(UserRole.MENTOR),
   validateRequest(allValidation.createReviewSchema),
   SubmissionController.createReview,

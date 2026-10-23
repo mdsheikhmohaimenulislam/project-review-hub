@@ -28,10 +28,7 @@ const updateSubmissionStatusSchema = z.object({
 });
 
 const createReviewSchema = z.object({
-  body: z.object({
-    submissionId: z.string().min(1, "Submission ID is required"),
-    message: z.string().trim().min(1, "Review message is required"),
-  }),
+  message: z.string().trim().min(1).max(2000),
 });
 
 const allValidation = {
