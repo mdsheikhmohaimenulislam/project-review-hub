@@ -8,9 +8,9 @@
   "main": "src/server.ts",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "prisma generate && tsc -p tsconfig.json",
-    "start": "node dist/src/server.js",
-    "vercel-build": "prisma generate && tsc -p tsconfig.json && node scripts/fix-imports.js",
+    "build": "tsup",
+    "start": "node dist/server.js",
+    "vercel-build": "prisma generate && tsc -p tsconfig.json",
     "stripe:webhook": "stripe listen --forward-to localhost:5000/api/subscription/webhook",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,6 +23,7 @@
     "@types/node": "^26.6.5",
     "@types/pg": "^8.23.1",
     "prisma": "^7.10.1",
+    "tsup": "^8.5.1",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   },
