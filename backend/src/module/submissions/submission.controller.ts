@@ -4,6 +4,8 @@ import httpStatus from "http-status";
 import { catchAsync } from "../../utils/catchAsync.ts";
 import { sendResponse } from "../../utils/sendResponse.ts";
 import { SubmissionServices } from "./submission.service.ts";
+import { AppError } from "../../utils/AppError.ts";
+import { IRequestUser } from "./submissions.interface.ts";
 
 const createSubmission = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
@@ -34,6 +36,42 @@ const getMySubmission = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
+const getSubmissionById = catchAsync(
+  async (req: Request, res: Response) => {
+    const user = req.user as IRequestUser | undefined;
+    const { id } = req.params;
+
+    if (!user?.userId) {
+      throw new AppError(
+        httpStatus.UNAUTHORIZED,
+        "Please log in to view this submission",
+      );
+    }
+
+    if (!id) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Submission ID is required",
+      );
+    }
+
+    const result = await SubmissionServices.getSubmissionById(
+      id as string,
+      user,
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Submission fetched successfully",
+      data: result,
+    });
+  },
+);
+
+
+
 
 const getAllSubmissions = catchAsync(async (req: Request, res: Response) => {
   const page = Number(req.query.page ?? 1);
@@ -147,4 +185,5 @@ export const SubmissionController = {
   createReview,
   getReviewsBySubmission,
   deleteSubmission,
+  getSubmissionById
 };

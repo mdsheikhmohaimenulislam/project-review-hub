@@ -1,3 +1,4 @@
+import { UserRole } from "../../../generated/prisma/enums.ts";
 
 export interface CreateSubmissionInput {
   projectName: string;
@@ -9,4 +10,10 @@ export interface CreateSubmissionInput {
 export interface ICreateReviewPayload {
   submissionId: string;
   message: string;
+}
+export interface IRequestUser {
+  userId: string;
+  name: string;
+  email: string;
+  role: UserRole;
 }

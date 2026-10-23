@@ -1,11 +1,12 @@
-
 import type { Request, Response } from "express";
 import httpStatus from "http-status";
+
 import { catchAsync } from "../../utils/catchAsync.ts";
-import { AuthService } from "./auth.service.ts";
 import { sendResponse } from "../../utils/sendResponse.ts";
-import type { IRequestUser } from "./auth.interface.ts";
 import { AppError } from "../../utils/AppError.ts";
+
+import { AuthService } from "./auth.service.ts";
+import type { IRequestUser } from "./auth.interface.ts";
 
 const getCookieOptions = () => {
   const isProduction = process.env.NODE_ENV === "production";
@@ -49,7 +50,11 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
     statusCode: httpStatus.OK,
     success: true,
     message: "User logged in successfully",
-    data: user,
+    data: {
+      ...user,
+      accessToken,
+      refreshToken,
+    },
   });
 });
 

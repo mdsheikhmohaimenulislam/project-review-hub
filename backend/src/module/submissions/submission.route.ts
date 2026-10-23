@@ -16,10 +16,11 @@ router.post(
   SubmissionController.createSubmission,
 );
 
+router.get("/me", auth(UserRole.STUDENT), SubmissionController.getMySubmission);
 router.get(
-  "/me",
-  auth(UserRole.STUDENT),
-  SubmissionController.getMySubmission,
+  "/:id",
+  auth(UserRole.STUDENT, UserRole.MENTOR),
+  SubmissionController.getSubmissionById,
 );
 
 router.get(

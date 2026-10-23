@@ -2,7 +2,7 @@ import httpStatus from "http-status";
 import type { SubmissionStatus } from "../../../generated/prisma/enums.ts";
 import { prisma } from "../../libs/prisma.ts";
 import { AppError } from "../../utils/AppError.ts";
-import { CreateSubmissionInput, ICreateReviewPayload } from "./submissions.interface.ts";
+import { CreateSubmissionInput, ICreateReviewPayload, IRequestUser } from "./submissions.interface.ts";
 
 interface SubmissionQuery {
   page: number;
@@ -78,6 +78,47 @@ const createSubmission = async (
 };
 
 
+const getSubmissionById = async (
+  id: string,
+  user: IRequestUser,
+) => {
+  const submission = await prisma.submission.findUnique({
+    where: { id },
+    include: {
+      feedback: {
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!submission) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Submission not found",
+    );
+  }
+
+  if (
+    user.role === "STUDENT" &&
+    submission.studentId !== user.userId
+  ) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "You are not allowed to view this submission",
+    );
+  }
+
+  return submission;
+};
 
 const getMySubmission = async (studentId: string) => {
   return prisma.submission.findMany({
@@ -265,5 +306,6 @@ export const SubmissionServices = {
   updateSubmissionStatus,
   createReview,
   getReviewsBySubmission,
-  deleteSubmission
+  deleteSubmission,
+  getSubmissionById
 };
