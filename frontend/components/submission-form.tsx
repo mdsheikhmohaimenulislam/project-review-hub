@@ -144,14 +144,22 @@ export function SubmissionForm() {
           )}
 
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              disabled={loading}
-              onClick={() => router.back()}
-            >
-              Cancel
-            </Button>
+<Button
+  type="button"
+  variant="outline"
+  disabled={loading}
+  onClick={() => {
+    setForm({
+      projectName: "",
+      repoUrl: "",
+      liveUrl: "",
+      description: "",
+    });
+    setError("");
+  }}
+>
+  Cancel
+</Button>
 
             <Button type="submit" disabled={loading}>
               {loading && (

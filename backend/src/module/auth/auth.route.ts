@@ -1,6 +1,6 @@
-
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
+
 import { validateRequest } from "../../middlewares/validateRequst.ts";
 import { auth } from "../../middlewares/checkAuth.ts";
 import { AuthController } from "./auth.controller.ts";
@@ -11,15 +11,16 @@ const router = Router();
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 10,
+  limit: 5,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
     success: false,
-    message: "Too many attempts. Please try again later.",
+    message: "Too many attempts. Please try again after 15 minutes.",
   },
 });
 
+// Register
 router.post(
   "/register",
   authLimiter,
@@ -27,6 +28,7 @@ router.post(
   AuthController.register,
 );
 
+// Login
 router.post(
   "/login",
   authLimiter,
@@ -34,12 +36,14 @@ router.post(
   AuthController.loginUser,
 );
 
+// Get logged-in user
 router.get(
   "/me",
   auth(UserRole.MENTOR, UserRole.STUDENT),
   AuthController.getMe,
 );
 
+// Logout
 router.post("/logout", AuthController.logout);
 
 export const AuthRoutes = router;

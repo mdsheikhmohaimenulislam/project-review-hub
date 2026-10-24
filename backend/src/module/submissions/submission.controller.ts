@@ -7,22 +7,24 @@ import { SubmissionServices } from "./submission.service.ts";
 import { AppError } from "../../utils/AppError.ts";
 import { IRequestUser } from "./submissions.interface.ts";
 
-const createSubmission = catchAsync(async (req: Request, res: Response) => {
-  const payload = req.body;
-  const user = req.user!;
+const createSubmission = catchAsync(
+  async (req: Request, res: Response) => {
+    const payload = req.body;
+    const user = req.user!;
 
-  const result = await SubmissionServices.createSubmission(
-    user.userId,
-    payload,
-  );
+    const result = await SubmissionServices.createSubmission(
+      user.userId,
+      payload,
+    );
 
-  sendResponse(res, {
-    statusCode: httpStatus.CREATED,
-    success: true,
-    message: "Project Submitted Successfully",
-    data: result,
-  });
-});
+    sendResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "Project Submitted Successfully",
+      data: result,
+    });
+  },
+);
 
 const getMySubmission = catchAsync(async (req: Request, res: Response) => {
   const user = req.user!;

@@ -5,41 +5,69 @@ import { UserRole } from "../../../generated/prisma/enums.ts";
 import { validateRequest } from "../../middlewares/validateRequst.ts";
 import { SubmissionController } from "./submission.controller.ts";
 import allValidation from "./submission.validation.ts";
+import rateLimit from "express-rate-limit";
 
 const router = Router();
+
+// Limit submission creation requests
+const submissionLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: "Too many submissions. Please try again after 15 minutes.",
+  },
+});
 
 // Submission routes
 router.post(
   "/",
   auth(UserRole.STUDENT),
+  submissionLimiter,
   validateRequest(allValidation.createSubmissionSchema),
   SubmissionController.createSubmission,
 );
 
-router.get("/me", auth(UserRole.STUDENT), SubmissionController.getMySubmission);
+router.get(
+  "/me",
+  auth(UserRole.STUDENT),
+
+  SubmissionController.getMySubmission,
+);
 router.get(
   "/:id",
   auth(UserRole.STUDENT, UserRole.MENTOR),
+
   SubmissionController.getSubmissionById,
 );
 
 router.get(
   "/statistics",
   auth(UserRole.MENTOR),
+
   SubmissionController.getSubmissionStatistics,
 );
 
-router.get("/", auth(UserRole.MENTOR), SubmissionController.getAllSubmissions);
+router.get(
+  "/",
+  auth(UserRole.MENTOR),
+
+  SubmissionController.getAllSubmissions,
+);
 
 router.patch(
   "/:id",
   auth(UserRole.MENTOR),
+
   validateRequest(allValidation.updateSubmissionStatusSchema),
   SubmissionController.updateSubmissionStatus,
 );
 
 router.delete(
   "/:id",
+
   auth(UserRole.MENTOR),
   SubmissionController.deleteSubmission,
 );
@@ -48,6 +76,7 @@ router.delete(
 router.post(
   "/:id",
   auth(UserRole.MENTOR),
+
   validateRequest(allValidation.createReviewSchema),
   SubmissionController.createReview,
 );
@@ -55,6 +84,7 @@ router.post(
 router.get(
   "/:submissionId",
   auth(UserRole.MENTOR, UserRole.STUDENT),
+
   SubmissionController.getReviewsBySubmission,
 );
 

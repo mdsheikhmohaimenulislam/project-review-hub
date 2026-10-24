@@ -3,6 +3,7 @@ import type { SubmissionStatus } from "../../../generated/prisma/enums.ts";
 import { prisma } from "../../libs/prisma.ts";
 import { AppError } from "../../utils/AppError.ts";
 import { CreateSubmissionInput, ICreateReviewPayload, IRequestUser } from "./submissions.interface.ts";
+import { isValidGitHubRepo } from "../../utils/validate-project-url.ts";
 
 interface SubmissionQuery {
   page: number;
@@ -15,54 +16,45 @@ const createSubmission = async (
   studentId: string,
   payload: CreateSubmissionInput,
 ) => {
+  let isValidRepo: boolean;
+
+  try {
+    isValidRepo = await isValidGitHubRepo(payload.repoUrl);
+  } catch {
+    throw new AppError(
+      httpStatus.SERVICE_UNAVAILABLE,
+      "GitHub repository validation is temporarily unavailable. Please try again.",
+    );
+  }
+
+  if (!isValidRepo) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Please provide a valid public GitHub repository URL.",
+    );
+  }
+
   const existingSubmission = await prisma.submission.findFirst({
     where: {
       studentId,
-      projectName: payload.projectName,
-    },
-    orderBy: {
-      createdAt: "desc",
+      projectName: {
+        equals: payload.projectName.trim(),
+        mode: "insensitive",
+      },
     },
   });
 
   if (existingSubmission) {
-    if (existingSubmission.status === "PENDING") {
-      return prisma.submission.update({
-        where: {
-          id: existingSubmission.id,
-        },
-        data: {
-          ...payload,
-          status: "PENDING",
-        },
-        include: {
-          student: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
-          },
-        },
-      });
-    }
-
-    const statusMessages = {
-      PENDING: "Your Project Is Waiting for Review",
-      APPROVED: "Your Project Has Been Approved",
-      REJECTED: "Your Project Has Been Rejected",
-    };
-
     throw new AppError(
       httpStatus.CONFLICT,
-      statusMessages[existingSubmission.status] ??
-        "You Have Already Submitted This Project",
+      "You have already submitted a project with this name.",
     );
   }
 
-  return prisma.submission.create({
+  const submission = await prisma.submission.create({
     data: {
       ...payload,
+      projectName: payload.projectName.trim(),
       studentId,
     },
     include: {
@@ -75,8 +67,9 @@ const createSubmission = async (
       },
     },
   });
-};
 
+  return submission;
+};
 
 const getSubmissionById = async (
   id: string,
